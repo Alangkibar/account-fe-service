@@ -1,0 +1,34 @@
+services:
+  app:
+    image: PLACEHOLDER_APP_IMAGE
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      resources:
+        limits:
+          memory: 1024M
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-public"
+        - "traefik.constraint-label=traefik-public"
+        - "traefik.http.routers.account-fe-customer.rule=Host(`account.localplace.id`)"
+        - "traefik.http.routers.account-fe-customer.entrypoints=http"
+        - "traefik.http.routers.account-fe-customer-https.rule=Host(`account.localplace.id`)"
+        - "traefik.http.routers.account-fe-customer-https.entrypoints=https"
+        - "traefik.http.routers.account-fe-customer-https.tls.certresolver=le"
+        - "traefik.http.routers.account-fe-customer-https.tls=true"
+        - "traefik.http.services.account-fe-customer-https.loadbalancer.server.port=3000"
+    environment:
+      PUBLIC_API_URL: "https://account.localplace.id/api/v1"
+      PUBLIC_BASE_URL: "https://account.localplace.id"
+      PUBLIC_BASE_URL_FITLY: "https://fitly.localplace.id"
+      PUBLIC_BASE_URL_LOCAL_PLACE: "https://localplace.id"
+      PUBLIC_BASE_URL_LOCAL_LAB: "https://lab.localplace.id"
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true

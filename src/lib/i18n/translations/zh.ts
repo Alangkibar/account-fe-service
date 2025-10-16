@@ -1,0 +1,48 @@
+export default {
+	common: {
+		signIn: '登录',
+		signUp: '注册',
+		forgotPassword: '忘记密码？',
+		rememberMe: '记住我',
+		phoneNumber: '电话号码',
+		password: '密码',
+		fullName: '全名',
+		confirmPassword: '确认密码',
+		ecosystem: '是 Local Place 生态系统的一部分'
+	},
+	signIn: {
+		title: '登录以继续访问',
+		subtitle: '欢迎回来！请输入您的详细信息。',
+		button: '登录',
+		noAccount: '还没有账户？',
+		signUpLink: '注册',
+		phoneNumberPlaceholder: '输入您的电话号码',
+		passwordPlaceholder: '输入您的密码'
+	},
+	signUp: {
+		title: '创建您的',
+		titleSuffix: '账户',
+		subtitle: '开始使用您的免费账户',
+		button: '创建账户',
+		hasAccount: '已经有账户了？',
+		signInLink: '登录',
+		fullNamePlaceholder: '输入您的全名',
+		phoneNumberPlaceholder: '输入您的电话号码',
+		passwordPlaceholder: '创建密码',
+		confirmPasswordPlaceholder: '确认您的密码'
+	},
+	forgotPassword: {
+		title: '重置您的密码',
+		subtitle: '输入您的电话号码，我们将向您发送重置密码的说明',
+		button: '发送重置说明',
+		rememberPassword: '记得您的密码？',
+		signInLink: '登录',
+		phoneNumberPlaceholder: '输入您的电话号码'
+	},
+	error: {
+		title: '您无权访问',
+		description: '对此页面的访问受到限制。',
+		warning: '此页面需要有效的 origin 参数。请通过适当的渠道访问此页面。',
+		goHome: '返回首页'
+	}
+};

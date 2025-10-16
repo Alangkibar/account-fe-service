@@ -1,0 +1,142 @@
+name: Publish
+
+on:
+    workflow_dispatch:
+    push:
+        branches:
+            - staging
+            - ci/*
+        tags:
+            - "*"
+
+env:
+    DOCKER_REGISTRY: "docker.io"
+    DOCKER_USERNAME: "localplace"
+    IMAGE_NAME: "account-frontend-customer"
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.DOCKER_REGISTRY }}
+                  username: ${{ env.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Determine Environment
+              id: set_env
+              run: |
+                  if [ "${{ github.ref_type }}" == "tag" ]; then
+                    echo "ENV=production" >> $GITHUB_ENV
+                  else
+                    echo "ENV=development" >> $GITHUB_ENV
+                  fi
+
+            - name: Debug Environment
+              run: |
+                  echo "GITHUB_REF: ${{ github.ref }}"
+                  echo "GITHUB_REF_TYPE: ${{ github.ref_type }}"
+                  echo "ENV: ${{ env.ENV }}"
+
+            - name: Extract metadata
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}
+                  tags: |
+                      # Tag 'latest' for staging and ci/* branches
+                      type=raw,value=latest,enable=${{ github.event_name == 'push' && (github.ref == format('refs/heads/{0}', 'staging') || startsWith(github.ref, 'refs/heads/ci/')) }}
+                      # Tag for any Git tag
+                      type=ref,event=tag
+
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  build-args: |
+                      ENV_FILE=.env.${{ env.ENV }}
+
+    staging-deploy:
+        needs: build
+        runs-on: ubuntu-latest
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/staging' || startsWith(github.ref, 'refs/heads/ci/'))
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Debug Deployment
+              run: |
+                  echo "Deploying to staging with IMAGE_TAG: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+
+            - name: Deploy
+              env:
+                  SSH_TARGET: ${{ secrets.SSH_LOCALPLACE_USER_SERVER }}@${{ secrets.SSH_LOCALPLACE_HOST_SERVER }}
+                  IMAGE_TAG: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+              run: |
+                  sudo apt-get update && sudo apt-get install -y openssh-client
+                  eval "$(ssh-agent -s)"
+                  echo "${{ secrets.SSH_LOCALPLACE_KEY_SERVER }}" | base64 -d -i | tr -d '\r' | ssh-add -
+                  mkdir -p ~/.ssh
+                  echo "StrictHostKeyChecking no" >> ~/.ssh/config
+                  ssh-keyscan -H ${{ secrets.SSH_LOCALPLACE_HOST_SERVER }} >> ~/.ssh/known_hosts
+                  chmod 644 ~/.ssh/known_hosts
+                  ssh -o StrictHostKeyChecking=no $SSH_TARGET "echo 'SSH Connection Successful'"
+
+                  sed -i "s|PLACEHOLDER_APP_IMAGE|${IMAGE_TAG}|g" .docker/docker-compose.staging.yml
+
+                  # Log in to Docker Hub on remote server
+                  ssh $SSH_TARGET "docker login -u ${{ env.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} ${{ env.DOCKER_REGISTRY }}"
+                  ssh $SSH_TARGET "docker pull ${IMAGE_TAG}"
+
+                  docker context create remote --docker "host=ssh://$SSH_TARGET"
+                  docker --context=remote stack deploy -c .docker/docker-compose.staging.yml --with-registry-auth --resolve-image=always staging-account_fe_service
+                  docker --context=remote service update --force staging-account_fe_service_app
+
+    deploy-production:
+        runs-on: ubuntu-latest
+        needs: build
+        if: startsWith(github.ref, 'refs/tags/v')
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Debug Deployment
+              run: |
+                  echo "Deploying to production with IMAGE_TAG: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}"
+
+            - name: Deploy to VM using SSH
+              timeout-minutes: 5
+              env:
+                  SSH_TARGET: ${{ secrets.SSH_LOCALPLACE_USER_SERVER }}@${{ secrets.SSH_LOCALPLACE_HOST_SERVER }}
+                  IMAGE_TAG: ${{ env.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
+              run: |
+                  sudo apt-get update && sudo apt-get install -y openssh-client
+                  eval "$(ssh-agent -s)"
+                  echo "${{ secrets.SSH_LOCALPLACE_KEY_SERVER }}" | base64 -d -i | tr -d '\r' | ssh-add -
+                  mkdir -p ~/.ssh
+                  echo "StrictHostKeyChecking no" >> ~/.ssh/config
+                  ssh-keyscan -H ${{ secrets.SSH_LOCALPLACE_HOST_SERVER }} >> ~/.ssh/known_hosts
+                  chmod 644 ~/.ssh/known_hosts
+                  ssh -o StrictHostKeyChecking=no $SSH_TARGET "echo 'SSH Connection Successful'"
+
+                  sed -i "s|PLACEHOLDER_APP_IMAGE|${IMAGE_TAG}|g" .docker/docker-compose.prod.yml
+
+                  # Log in to Docker Hub on remote server
+                  ssh $SSH_TARGET "docker login -u ${{ env.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} ${{ env.DOCKER_REGISTRY }}"
+                  ssh $SSH_TARGET "docker pull ${IMAGE_TAG}"
+
+                  docker context create remote --docker "host=ssh://$SSH_TARGET"
+                  docker --context=remote stack deploy -c .docker/docker-compose.prod.yml --detach=false --with-registry-auth --resolve-image=always account-fe-service

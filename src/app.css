@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+/* Configure dark mode to use class strategy */
+@custom-variant dark (.dark &);
+
+/* Dark mode support with custom colors */
+html.dark {
+	color-scheme: dark;
+	--dark-bg: #00262a;
+	--dark-green: #37cca8;
+	--dark-surface: #003a3f;
+	--dark-border: #005159;
+}
+
+html.dark {
+	background-color: var(--dark-bg);
+}

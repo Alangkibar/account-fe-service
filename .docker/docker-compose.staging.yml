@@ -1,0 +1,34 @@
+services:
+  app:
+    image: PLACEHOLDER_APP_IMAGE
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      resources:
+        limits:
+          memory: 1024M
+      labels:
+        - "traefik.enable=true"
+        - "traefik.docker.network=traefik-public"
+        - "traefik.constraint-label=traefik-public"
+        - "traefik.http.routers.staging-account-fe-customer.rule=Host(`demo-account.localplace.id`)"
+        - "traefik.http.routers.staging-account-fe-customer.entrypoints=http"
+        - "traefik.http.routers.staging-account-fe-customer-https.rule=Host(`demo-account.localplace.id`)"
+        - "traefik.http.routers.staging-account-fe-customer-https.entrypoints=https"
+        - "traefik.http.routers.staging-account-fe-customer-https.tls.certresolver=le"
+        - "traefik.http.routers.staging-account-fe-customer-https.tls=true"
+        - "traefik.http.services.staging-account-fe-customer-https.loadbalancer.server.port=3000"
+    environment:
+      PUBLIC_API_URL: "https://demo-account.localplace.id/api/v1"
+      PUBLIC_BASE_URL: "https://demo-account.localplace.id"
+      PUBLIC_BASE_URL_FITLY: "https://demo-fitly.localplace.id"
+      PUBLIC_BASE_URL_LOCAL_PLACE: "https://demo.localplace.id"
+      PUBLIC_BASE_URL_LOCAL_LAB: "https://demo-lab.localplace.id"
+    networks:
+      - traefik-public
+
+networks:
+  traefik-public:
+    external: true

@@ -1,0 +1,208 @@
+<script lang="ts">
+  import type { ActionData, PageData } from "./$types";
+  import { getOriginConfig } from "$lib/config/origins";
+  import { theme } from "$lib/stores/theme";
+  import { language, getTranslations } from "$lib/stores/language";
+  import LanguageSelector from "$lib/components/LanguageSelector.svelte";
+  import { enhance } from "$app/forms";
+  import logo from "$lib/assets/logo.png";
+
+  let { data, form }: { data: PageData; form: ActionData } = $props();
+
+  const config = getOriginConfig(data.origin);
+  let t = $derived(getTranslations($language));
+</script>
+
+<svelte:head>
+  <title>Local Place Account - Forgot Password</title>
+</svelte:head>
+
+<div
+  class="min-h-screen flex flex-col gap-6 items-center justify-center bg-white dark:bg-[#00262a] py-8 px-4 sm:py-12 sm:px-6 lg:px-8 transition-colors"
+>
+  <!-- Language Selector and Theme Toggle -->
+  <div class="relative flex items-center justify-between gap-2 w-full">
+    <LanguageSelector />
+    <button
+      onclick={() => theme.toggle()}
+      class="p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-[#003a3f] hover:bg-gray-200 dark:hover:bg-[#004a50] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
+      style="focus:ring-color: {config.color}"
+      aria-label="Toggle dark mode"
+    >
+      {#if $theme === "dark"}
+        <svg
+          class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+            clip-rule="evenodd"
+          />
+        </svg>
+      {:else}
+        <svg
+          class="w-5 h-5 sm:w-6 sm:h-6 text-[#37cca8]"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+          />
+        </svg>
+      {/if}
+    </button>
+  </div>
+
+  <div class="max-w-md w-full">
+    <!-- LocalPlace Logo and Branding -->
+    <div class="text-center mb-6 sm:mb-8">
+      <div
+        class="h-16 w-16 flex items-center justify-center mx-auto mb-4 bg-[#00262a] rounded-full overflow-hidden"
+      >
+        <img src={logo} alt="LocalPlace" class="h-12 sm:h-16 mx-auto" />
+      </div>
+      <div
+        class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-[#003a3f] rounded-full text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-6"
+      >
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span
+          ><span style="color: {config.color}" class="font-semibold"
+            >{config.name}</span
+          >
+          {t.common.ecosystem}</span
+        >
+      </div>
+    </div>
+
+    <div class="text-center mb-8 sm:mb-10">
+      <h2
+        class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2"
+      >
+        {t.forgotPassword.title}
+      </h2>
+      <p class="text-gray-500 dark:text-gray-400 text-sm">
+        {t.forgotPassword.subtitle}
+      </p>
+    </div>
+
+    <form method="POST" use:enhance class="space-y-4 sm:space-y-5">
+      {#if form?.error}
+        <div
+          class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 sm:p-4"
+        >
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg
+                class="h-5 w-5 text-red-400 dark:text-red-500"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-red-800 dark:text-red-200">{form.error}</p>
+            </div>
+          </div>
+        </div>
+      {/if}
+
+      {#if form?.success}
+        <div
+          class="rounded-lg bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 p-3 sm:p-4"
+        >
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg
+                class="h-5 w-5 text-green-400 dark:text-green-500"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <p class="text-sm text-green-800 dark:text-green-200">
+                {form.message}
+              </p>
+            </div>
+          </div>
+        </div>
+      {/if}
+
+      <div>
+        <label
+          for="phone_number"
+          class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+        >
+          {t.common.phoneNumber}
+        </label>
+        <input
+          id="phone_number"
+          name="phone_number"
+          type="tel"
+          autocomplete="tel"
+          required
+          class="block w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 dark:border-[#005159] rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base"
+          style="--focus-color: {config.color}"
+          placeholder={t.forgotPassword.phoneNumberPlaceholder}
+          value={form?.phone_number ?? ""}
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="w-full py-2.5 sm:py-3 px-4 rounded-lg text-white font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-950 active:scale-[0.98] text-sm sm:text-base"
+        style="background-color: {config.color}; --hover-color: {config.accentColor}; --focus-color: {config.color}"
+      >
+        {t.forgotPassword.button}
+      </button>
+    </form>
+
+    <div
+      class="mt-5 sm:mt-6 text-center text-sm text-gray-600 dark:text-gray-400"
+    >
+      {t.forgotPassword.rememberPassword}
+      <a
+        href="/sign-in?origin={data.origin}"
+        class="font-medium hover:underline ml-1 transition-colors"
+        style="color: {config.color}"
+      >
+        {t.forgotPassword.signInLink}
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  input[type="tel"]:focus {
+    border-color: var(--focus-color);
+    box-shadow: 0 0 0 3px
+      color-mix(in srgb, var(--focus-color) 10%, transparent);
+  }
+
+  button[type="submit"]:hover {
+    background-color: var(--hover-color);
+  }
+
+  button[type="submit"]:focus {
+    box-shadow: 0 0 0 3px
+      color-mix(in srgb, var(--focus-color) 20%, transparent);
+  }
+</style>
