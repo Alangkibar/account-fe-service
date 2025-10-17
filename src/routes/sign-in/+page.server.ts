@@ -51,8 +51,21 @@ export const actions = {
 				})
 			});
 
+			console.error("API_URL: ", API_URL);
+
+			if (!response.ok) {
+				// THIS is the line to check!
+				const rawText = await response.text(); 
+				console.error("Non-200 Status API Response:", rawText.substring(0, 20));
+				// The non-JSON content should show up here!
+				
+				// You must still throw an error or return a proper response here
+				throw error(response.status, 'Failed to load data');
+			}
+
 			try {
 				result = await response.json();
+				console.log(result)
 			} catch (parseError) {
 				console.error('Failed to parse JSON response:', parseError);
 				const text = await response.text();

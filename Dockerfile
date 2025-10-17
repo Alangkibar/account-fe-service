@@ -11,11 +11,10 @@ FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Ensure .env file is copied, with fallback if missing
-COPY ${ENV_FILE:-.env.development} .env
+COPY $ENV_FILE .env
+RUN rm -f .env.production
+RUN rm -f .env.development
 RUN corepack enable pnpm && pnpm run build
-# Debug: List contents of /app and /app/build to verify build output
-RUN ls -la /app && ls -la /app/build || echo "build directory not found"
 
 FROM base AS runner
 WORKDIR /app
