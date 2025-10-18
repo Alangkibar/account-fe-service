@@ -8,6 +8,9 @@ export default {
 		password: 'Пароль',
 		fullName: 'Полное имя',
 		confirmPassword: 'Подтвердите пароль',
+		username: 'Имя пользователя',
+		email: 'Эл. почта',
+		optional: 'Необязательно',
 		ecosystem: 'является частью экосистемы Local Place'
 	},
 	signIn: {
@@ -27,9 +30,14 @@ export default {
 		hasAccount: 'Уже есть аккаунт?',
 		signInLink: 'Войти',
 		fullNamePlaceholder: 'Введите полное имя',
+		usernamePlaceholder: 'Введите имя пользователя',
+		emailPlaceholder: 'Введите адрес электронной почты',
 		phoneNumberPlaceholder: 'Введите номер телефона',
 		passwordPlaceholder: 'Создайте пароль',
-		confirmPasswordPlaceholder: 'Подтвердите пароль'
+		confirmPasswordPlaceholder: 'Подтвердите пароль',
+		usernameMinLength: 'Имя пользователя должно содержать не менее 3 символов',
+		usernameAvailable: 'Имя пользователя доступно',
+		usernameTaken: 'Имя пользователя уже занято'
 	},
 	forgotPassword: {
 		title: 'Сбросить пароль',

@@ -8,6 +8,9 @@ export default {
 		password: 'Kata Sandi',
 		fullName: 'Nama Lengkap',
 		confirmPassword: 'Konfirmasi Kata Sandi',
+		username: 'Nama Pengguna',
+		email: 'Email',
+		optional: 'Opsional',
 		ecosystem: 'adalah bagian dari ekosistem Local Place'
 	},
 	signIn: {
@@ -27,9 +30,14 @@ export default {
 		hasAccount: 'Sudah punya akun?',
 		signInLink: 'Masuk',
 		fullNamePlaceholder: 'Masukkan nama lengkap Anda',
+		usernamePlaceholder: 'Masukkan nama pengguna',
+		emailPlaceholder: 'Masukkan alamat email',
 		phoneNumberPlaceholder: 'Masukkan nomor telepon Anda',
 		passwordPlaceholder: 'Buat kata sandi',
-		confirmPasswordPlaceholder: 'Konfirmasi kata sandi Anda'
+		confirmPasswordPlaceholder: 'Konfirmasi kata sandi Anda',
+		usernameMinLength: 'Nama pengguna harus minimal 3 karakter',
+		usernameAvailable: 'Nama pengguna tersedia',
+		usernameTaken: 'Nama pengguna sudah digunakan'
 	},
 	forgotPassword: {
 		title: 'Atur ulang kata sandi Anda',

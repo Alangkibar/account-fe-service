@@ -18,9 +18,14 @@ export const load: PageServerLoad = async ({ url }) => {
 export const actions = {
 	default: async ({ request, cookies, url }) => {
 		const data = await request.formData();
-		const phone_number = data.get('phone_number')?.toString();
+		let phone_number = data.get('phone_number')?.toString();
 		const password = data.get('password')?.toString();
 		const origin = url.searchParams.get('origin');
+
+		// Format phone number: remove +62 prefix and leading 0
+		if (phone_number) {
+			phone_number = phone_number.replace(/^\+62/, '').replace(/^0/, '');
+		}
 
 		// Validate origin
 		if (!isValidOrigin(origin)) {

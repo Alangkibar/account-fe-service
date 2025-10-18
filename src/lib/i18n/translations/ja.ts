@@ -8,6 +8,9 @@ export default {
 		password: 'パスワード',
 		fullName: '氏名',
 		confirmPassword: 'パスワードの確認',
+		username: 'ユーザー名',
+		email: 'メールアドレス',
+		optional: '任意',
 		ecosystem: 'は Local Place エコシステムの一部です'
 	},
 	signIn: {
@@ -27,9 +30,14 @@ export default {
 		hasAccount: 'すでにアカウントをお持ちですか？',
 		signInLink: 'ログイン',
 		fullNamePlaceholder: '氏名を入力',
+		usernamePlaceholder: 'ユーザー名を入力',
+		emailPlaceholder: 'メールアドレスを入力',
 		phoneNumberPlaceholder: '電話番号を入力',
 		passwordPlaceholder: 'パスワードを作成',
-		confirmPasswordPlaceholder: 'パスワードを確認'
+		confirmPasswordPlaceholder: 'パスワードを確認',
+		usernameMinLength: 'ユーザー名は3文字以上である必要があります',
+		usernameAvailable: 'ユーザー名は利用可能です',
+		usernameTaken: 'このユーザー名は既に使用されています'
 	},
 	forgotPassword: {
 		title: 'パスワードをリセット',

@@ -8,6 +8,9 @@ export default {
 		password: '密码',
 		fullName: '全名',
 		confirmPassword: '确认密码',
+		username: '用户名',
+		email: '电子邮件',
+		optional: '可选',
 		ecosystem: '是 Local Place 生态系统的一部分'
 	},
 	signIn: {
@@ -27,9 +30,14 @@ export default {
 		hasAccount: '已经有账户了？',
 		signInLink: '登录',
 		fullNamePlaceholder: '输入您的全名',
+		usernamePlaceholder: '输入用户名',
+		emailPlaceholder: '输入电子邮件地址',
 		phoneNumberPlaceholder: '输入您的电话号码',
 		passwordPlaceholder: '创建密码',
-		confirmPasswordPlaceholder: '确认您的密码'
+		confirmPasswordPlaceholder: '确认您的密码',
+		usernameMinLength: '用户名必须至少3个字符',
+		usernameAvailable: '用户名可用',
+		usernameTaken: '用户名已被使用'
 	},
 	forgotPassword: {
 		title: '重置您的密码',

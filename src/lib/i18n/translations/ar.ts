@@ -8,6 +8,9 @@ export default {
 		password: 'كلمة المرور',
 		fullName: 'الاسم الكامل',
 		confirmPassword: 'تأكيد كلمة المرور',
+		username: 'اسم المستخدم',
+		email: 'البريد الإلكتروني',
+		optional: 'اختياري',
 		ecosystem: 'هو جزء من نظام Local Place'
 	},
 	signIn: {
@@ -27,9 +30,14 @@ export default {
 		hasAccount: 'هل لديك حساب بالفعل؟',
 		signInLink: 'تسجيل الدخول',
 		fullNamePlaceholder: 'أدخل اسمك الكامل',
+		usernamePlaceholder: 'أدخل اسم المستخدم',
+		emailPlaceholder: 'أدخل عنوان البريد الإلكتروني',
 		phoneNumberPlaceholder: 'أدخل رقم هاتفك',
 		passwordPlaceholder: 'إنشاء كلمة مرور',
-		confirmPasswordPlaceholder: 'تأكيد كلمة المرور'
+		confirmPasswordPlaceholder: 'تأكيد كلمة المرور',
+		usernameMinLength: 'يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل',
+		usernameAvailable: 'اسم المستخدم متاح',
+		usernameTaken: 'اسم المستخدم مستخدم بالفعل'
 	},
 	forgotPassword: {
 		title: 'إعادة تعيين كلمة المرور',

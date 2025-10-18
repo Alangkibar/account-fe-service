@@ -8,6 +8,9 @@ export default {
 		password: 'Password',
 		fullName: 'Full Name',
 		confirmPassword: 'Confirm Password',
+		username: 'Username',
+		email: 'Email',
+		optional: 'Optional',
 		ecosystem: 'is part of the Local Place ecosystem'
 	},
 	signIn: {
@@ -27,9 +30,14 @@ export default {
 		hasAccount: 'Already have an account?',
 		signInLink: 'Sign in',
 		fullNamePlaceholder: 'Enter your full name',
+		usernamePlaceholder: 'Enter username',
+		emailPlaceholder: 'Enter email address',
 		phoneNumberPlaceholder: 'Enter your phone number',
 		passwordPlaceholder: 'Create a password',
-		confirmPasswordPlaceholder: 'Confirm your password'
+		confirmPasswordPlaceholder: 'Confirm your password',
+		usernameMinLength: 'Username must be at least 3 characters',
+		usernameAvailable: 'Username is available',
+		usernameTaken: 'Username is already taken'
 	},
 	forgotPassword: {
 		title: 'Reset your password',

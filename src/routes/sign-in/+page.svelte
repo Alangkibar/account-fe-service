@@ -11,6 +11,16 @@
 
   const config = getOriginConfig(data.origin);
   let t = $derived(getTranslations($language));
+  let isSubmitting = $state(false);
+
+  // Phone number state
+  let phoneNumber = $state("");
+
+  function handlePhoneInput(e: Event) {
+    const value = (e.target as HTMLInputElement).value;
+    // Only allow numbers
+    phoneNumber = value.replace(/\D/g, "");
+  }
 </script>
 
 <svelte:head>
@@ -94,7 +104,17 @@
       </p>
     </div>
 
-    <form method="POST" use:enhance class="space-y-4 sm:space-y-5">
+    <form
+      method="POST"
+      use:enhance={() => {
+        isSubmitting = true;
+        return async ({ update }) => {
+          await update();
+          isSubmitting = false;
+        };
+      }}
+      class="space-y-4 sm:space-y-5"
+    >
       {#if form?.error}
         <div
           class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 sm:p-4"
@@ -127,17 +147,28 @@
         >
           {t.common.phoneNumber}
         </label>
-        <input
-          id="phone_number"
-          name="phone_number"
-          type="tel"
-          autocomplete="tel"
-          required
-          class="block w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 dark:border-[#005159] rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base"
-          style="--focus-color: {config.color}"
-          placeholder={t.signIn.phoneNumberPlaceholder}
-          value={form?.phone_number ?? ""}
-        />
+        <div class="relative">
+          <div
+            class="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-gray-700 dark:text-gray-300 text-sm sm:text-base pointer-events-none"
+          >
+            +62
+          </div>
+          <input
+            id="phone_number"
+            name="phone_number"
+            type="tel"
+            autocomplete="tel"
+            required
+            class="block w-full pl-14 sm:pl-16 pr-3 py-2.5 sm:pr-4 sm:py-3 border border-gray-300 dark:border-[#005159] rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base"
+            style="--focus-color: {config.color}"
+            placeholder="87712345678"
+            value={phoneNumber}
+            oninput={handlePhoneInput}
+          />
+        </div>
+        <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+          e.g., 87712345678
+        </p>
       </div>
 
       <div>
@@ -189,9 +220,32 @@
 
       <button
         type="submit"
-        class="w-full py-2.5 sm:py-3 px-4 rounded-lg text-white font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-950 active:scale-[0.98] text-sm sm:text-base"
+        disabled={isSubmitting}
+        class="w-full py-2.5 sm:py-3 px-4 rounded-lg text-white font-medium transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-950 active:scale-[0.98] text-sm sm:text-base disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         style="background-color: {config.color}; --hover-color: {config.accentColor}; --focus-color: {config.color}"
       >
+        {#if isSubmitting}
+          <svg
+            class="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        {/if}
         {t.signIn.button}
       </button>
     </form>
