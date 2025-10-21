@@ -1,7 +1,7 @@
 import { fail, error } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
-import { env } from '$env/dynamic/private';
 import { isValidOrigin } from '$lib/config/origins';
+import { PUBLIC_API_URL } from '$env/static/public';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const origin = url.searchParams.get('origin');
@@ -38,7 +38,7 @@ export const actions = {
 		}
 
 		try {
-			const API_URL = env.API_URL || 'http://localhost:3000';
+			const API_URL = PUBLIC_API_URL || 'http://localhost:3000';
 
 			console.log('Attempting password reset to:', `${API_URL}/auth/forgot-password/user`);
 			console.log('Email:', email);
