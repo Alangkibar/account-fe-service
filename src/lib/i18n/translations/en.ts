@@ -41,16 +41,38 @@ export default {
 	},
 	forgotPassword: {
 		title: 'Reset your password',
-		subtitle: "Enter your phone number and we'll send you instructions to reset your password",
+		subtitle: "Enter your email address and we'll send you instructions to reset your password",
 		button: 'Send Reset Instructions',
 		rememberPassword: 'Remember your password?',
 		signInLink: 'Sign in',
-		phoneNumberPlaceholder: 'Enter your phone number'
+		emailPlaceholder: 'Enter your email address',
+		successMessage: 'Reset password link has been sent to your email'
+	},
+	resetPassword: {
+		title: 'Create New Password',
+		subtitle: 'Enter your new password',
+		button: 'Reset Password',
+		submitting: 'Resetting...',
+		passwordPlaceholder: 'Enter new password',
+		confirmPasswordPlaceholder: 'Confirm new password',
+		redirecting: 'Redirecting to sign in...',
+		backToSignIn: 'Back to',
+		linkExpiresIn: 'Link expires in'
 	},
 	error: {
 		title: "You're Not Allowed",
 		description: 'Access to this page is restricted.',
 		warning: 'This page requires a valid origin parameter. Please access this page through the proper channel.',
-		goHome: 'Go to Home'
+		goHome: 'Go to Home',
+		invalidCredentials: 'Wrong Phone Number or Password',
+		invalidPhoneOrPassword: 'Invalid phone number or password',
+		phoneAlreadyRegistered: 'This phone number is already registered',
+		emailAlreadyRegistered: 'This email address is already registered',
+		usernameAlreadyTaken: 'This username is already taken',
+		registrationFailed: 'Registration failed. Please try again',
+		emailNotFound: 'Email address not found',
+		forgotPasswordFailed: 'Failed to send reset instructions. Please try again',
+		tokenExpired: 'Reset link is invalid or expired',
+		passwordResetFailed: 'Failed to reset password. Please try again'
 	}
 };

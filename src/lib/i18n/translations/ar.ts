@@ -41,16 +41,38 @@ export default {
 	},
 	forgotPassword: {
 		title: 'إعادة تعيين كلمة المرور',
-		subtitle: 'أدخل رقم هاتفك وسنرسل لك تعليمات لإعادة تعيين كلمة المرور',
+		subtitle: 'أدخل عنوان بريدك الإلكتروني وسنرسل لك تعليمات لإعادة تعيين كلمة المرور',
 		button: 'إرسال تعليمات إعادة التعيين',
 		rememberPassword: 'هل تتذكر كلمة المرور؟',
 		signInLink: 'تسجيل الدخول',
-		phoneNumberPlaceholder: 'أدخل رقم هاتفك'
+		emailPlaceholder: 'أدخل عنوان بريدك الإلكتروني',
+		successMessage: 'تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني'
+	},
+	resetPassword: {
+		title: 'إنشاء كلمة مرور جديدة',
+		subtitle: 'أدخل كلمة المرور الجديدة',
+		button: 'إعادة تعيين كلمة المرور',
+		submitting: 'جارٍ إعادة التعيين...',
+		passwordPlaceholder: 'أدخل كلمة المرور الجديدة',
+		confirmPasswordPlaceholder: 'تأكيد كلمة المرور الجديدة',
+		redirecting: 'إعادة التوجيه إلى تسجيل الدخول...',
+		backToSignIn: 'العودة إلى',
+		linkExpiresIn: 'ينتهي الرابط في'
 	},
 	error: {
 		title: 'غير مسموح لك',
 		description: 'الوصول إلى هذه الصفحة مقيد.',
 		warning: 'تتطلب هذه الصفحة معلمة origin صالحة. يرجى الوصول إلى هذه الصفحة من خلال القناة المناسبة.',
-		goHome: 'العودة للرئيسية'
+		goHome: 'العودة للرئيسية',
+		invalidCredentials: 'رقم الهاتف أو كلمة المرور خاطئة',
+		invalidPhoneOrPassword: 'رقم الهاتف أو كلمة المرور غير صالحة',
+		phoneAlreadyRegistered: 'رقم الهاتف هذا مسجل بالفعل',
+		emailAlreadyRegistered: 'عنوان البريد الإلكتروني هذا مسجل بالفعل',
+		usernameAlreadyTaken: 'اسم المستخدم هذا مستخدم بالفعل',
+		registrationFailed: 'فشل التسجيل. يرجى المحاولة مرة أخرى',
+		emailNotFound: 'عنوان البريد الإلكتروني غير موجود',
+		forgotPasswordFailed: 'فشل إرسال تعليمات إعادة التعيين. يرجى المحاولة مرة أخرى',
+		tokenExpired: 'رابط إعادة التعيين غير صالح أو منتهي الصلاحية',
+		passwordResetFailed: 'فشل إعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى'
 	}
 };
