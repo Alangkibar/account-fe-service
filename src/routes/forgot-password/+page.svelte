@@ -11,6 +11,35 @@
 
   const config = getOriginConfig(data.origin);
   let t = $derived(getTranslations($language));
+
+  // Translate error codes from server
+  function translateErrorCode(errorCode: string): string {
+    switch (errorCode) {
+      case 'EMAIL_NOT_FOUND':
+      case 'USER_NOT_FOUND':
+        return t.error.emailNotFound || 'Email address not found';
+      case 'FORGOT_PASSWORD_FAILED':
+        return t.error.forgotPasswordFailed || 'Failed to send reset instructions';
+      default:
+        return errorCode;
+    }
+  }
+
+  // Get all error messages (can be multiple)
+  function getErrorMessages(): string {
+    if (!form?.errors) {
+      return form?.errorMessage || form?.error || '';
+    }
+
+    // If there are error codes, translate them
+    if (Array.isArray(form.errors) && form.errors.length > 0) {
+      const translatedErrors = form.errors.map(code => translateErrorCode(code));
+      return translatedErrors.join(', ');
+    }
+
+    // Fallback to server message or generic error
+    return form?.errorMessage || form?.error || '';
+  }
 </script>
 
 <svelte:head>
@@ -94,7 +123,7 @@
     </div>
 
     <form method="POST" use:enhance class="space-y-4 sm:space-y-5">
-      {#if form?.error}
+      {#if form?.errors || form?.error || form?.errorMessage}
         <div
           class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 sm:p-4"
         >
@@ -113,7 +142,7 @@
               </svg>
             </div>
             <div class="ml-3">
-              <p class="text-sm text-red-800 dark:text-red-200">{form.error}</p>
+              <p class="text-sm text-red-800 dark:text-red-200">{getErrorMessages()}</p>
             </div>
           </div>
         </div>
@@ -139,7 +168,7 @@
             </div>
             <div class="ml-3">
               <p class="text-sm text-green-800 dark:text-green-200">
-                {form.message}
+                {t.forgotPassword.successMessage}
               </p>
             </div>
           </div>
@@ -148,21 +177,21 @@
 
       <div>
         <label
-          for="phone_number"
+          for="email"
           class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
         >
-          {t.common.phoneNumber}
+          {t.common.email}
         </label>
         <input
-          id="phone_number"
-          name="phone_number"
-          type="tel"
-          autocomplete="tel"
+          id="email"
+          name="email"
+          type="email"
+          autocomplete="email"
           required
           class="block w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 dark:border-[#005159] rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base"
           style="--focus-color: {config.color}"
-          placeholder={t.forgotPassword.phoneNumberPlaceholder}
-          value={form?.phone_number ?? ""}
+          placeholder={t.forgotPassword.emailPlaceholder}
+          value={form?.email ?? ""}
         />
       </div>
 

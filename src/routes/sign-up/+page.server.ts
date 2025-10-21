@@ -82,8 +82,30 @@ export const actions = {
 		}
 
 		if (!response.ok || !result.success) {
+			// Handle multiple errors from API
+			const errorCodes: string[] = [];
+
+			// Check if errors array exists
+			if (result.errors && Array.isArray(result.errors)) {
+				result.errors.forEach((err: any) => {
+					// If error is a string, push it directly
+					if (typeof err === 'string') {
+						errorCodes.push(err);
+					}
+					// If error is an object with code property
+					else if (err.code) {
+						errorCodes.push(err.code);
+					}
+				});
+			}
+			// Fallback to single error object
+			else if (result.error?.code) {
+				errorCodes.push(result.error.code);
+			}
+
 			return fail(response.status, {
-				error: result.message || 'Registration failed',
+				errors: errorCodes.length > 0 ? errorCodes : ['REGISTRATION_FAILED'],
+				errorMessage: result.message,
 				phone_number,
 				name,
 				username,

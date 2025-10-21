@@ -58,16 +58,7 @@ export const actions = {
 
 			console.error("API_URL: ", API_URL);
 
-			if (!response.ok) {
-				// THIS is the line to check!
-				const rawText = await response.text(); 
-				console.error("Non-200 Status API Response:", rawText.substring(0, 20));
-				// The non-JSON content should show up here!
-				
-				// You must still throw an error or return a proper response here
-				throw error(response.status, 'Failed to load data');
-			}
-
+			// Parse JSON response regardless of status code
 			try {
 				result = await response.json();
 				console.log(result)
@@ -81,9 +72,32 @@ export const actions = {
 				});
 			}
 
+			// Handle unsuccessful responses
 			if (!response.ok || !result.success) {
+				// Handle multiple errors from API
+				const errorCodes: string[] = [];
+
+				// Check if errors array exists
+				if (result.errors && Array.isArray(result.errors)) {
+					result.errors.forEach((err: any) => {
+						// If error is a string, push it directly
+						if (typeof err === 'string') {
+							errorCodes.push(err);
+						}
+						// If error is an object with code property
+						else if (err.code) {
+							errorCodes.push(err.code);
+						}
+					});
+				}
+				// Fallback to single error object
+				else if (result.error?.code) {
+					errorCodes.push(result.error.code);
+				}
+
 				return fail(response.status, {
-					error: result.message || 'Invalid phone number or password',
+					errors: errorCodes.length > 0 ? errorCodes : ['UNKNOWN_ERROR'],
+					errorMessage: result.message,
 					phone_number
 				});
 			}

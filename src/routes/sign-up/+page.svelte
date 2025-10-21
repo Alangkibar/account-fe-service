@@ -88,6 +88,38 @@
     }, 500);
   }
 
+  // Translate error codes from server
+  function translateErrorCode(errorCode: string): string {
+    switch (errorCode) {
+      case 'PHONE_NUMBER_ALREADY_EXISTS':
+        return t.error.phoneAlreadyRegistered;
+      case 'EMAIL_ALREADY_EXISTS':
+        return t.error.emailAlreadyRegistered;
+      case 'USERNAME_ALREADY_EXISTS':
+        return t.error.usernameAlreadyTaken;
+      case 'REGISTRATION_FAILED':
+        return t.error.registrationFailed;
+      default:
+        return errorCode;
+    }
+  }
+
+  // Get all error messages (can be multiple)
+  function getErrorMessages(): string {
+    if (!form?.errors) {
+      return form?.errorMessage || t.error.registrationFailed;
+    }
+
+    // If there are error codes, translate them
+    if (Array.isArray(form.errors) && form.errors.length > 0) {
+      const translatedErrors = form.errors.map(code => translateErrorCode(code));
+      return translatedErrors.join(', ');
+    }
+
+    // Fallback to server message or generic error
+    return form?.errorMessage || t.error.registrationFailed;
+  }
+
   function handlePhoneInput(e: Event) {
     const value = (e.target as HTMLInputElement).value;
     // Only allow numbers
@@ -188,7 +220,7 @@
       }}
       class="space-y-4 sm:space-y-5"
     >
-      {#if form?.error}
+      {#if form?.errors || form?.errorMessage}
         <div
           class="rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3 sm:p-4"
         >
@@ -207,7 +239,7 @@
               </svg>
             </div>
             <div class="ml-3">
-              <p class="text-sm text-red-800 dark:text-red-200">{form.error}</p>
+              <p class="text-sm text-red-800 dark:text-red-200">{getErrorMessages()}</p>
             </div>
           </div>
         </div>
