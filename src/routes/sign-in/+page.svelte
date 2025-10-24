@@ -25,7 +25,7 @@
   // Translate error codes from server
   function translateErrorCode(errorCode: string): string {
     switch (errorCode) {
-      case 'INVALID_CREDENTIALS':
+      case "INVALID_CREDENTIALS":
         return t.error.invalidCredentials;
       default:
         return errorCode;
@@ -40,8 +40,10 @@
 
     // If there are error codes, translate them
     if (Array.isArray(form.errors) && form.errors.length > 0) {
-      const translatedErrors = form.errors.map(code => translateErrorCode(code));
-      return translatedErrors.join(', ');
+      const translatedErrors = form.errors.map((code) =>
+        translateErrorCode(code)
+      );
+      return translatedErrors.join(", ");
     }
 
     // Fallback to server message or generic error
@@ -160,7 +162,9 @@
               </svg>
             </div>
             <div class="ml-3">
-              <p class="text-sm text-red-800 dark:text-red-200">{getErrorMessages()}</p>
+              <p class="text-sm text-red-800 dark:text-red-200">
+                {getErrorMessages()}
+              </p>
             </div>
           </div>
         </div>
@@ -219,22 +223,6 @@
       <div
         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0 text-sm"
       >
-        <div class="flex items-center">
-          <input
-            id="remember-me"
-            name="remember-me"
-            type="checkbox"
-            class="h-4 w-4 rounded border-gray-300 dark:border-[#005159] bg-white dark:bg-[#003a3f] focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-colors"
-            style="--focus-color: {config.color}"
-          />
-          <label
-            for="remember-me"
-            class="ml-2 text-gray-700 dark:text-gray-300"
-          >
-            {t.common.rememberMe}
-          </label>
-        </div>
-
         <a
           href="/forgot-password?origin={data.origin}"
           class="font-medium hover:underline transition-colors"
