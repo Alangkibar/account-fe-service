@@ -19,6 +19,7 @@ export default {
 		button: 'ログイン',
 		noAccount: 'アカウントをお持ちでないですか？',
 		signUpLink: '新規登録',
+		createNewAccount: '新しいアカウントを作成',
 		phoneNumberPlaceholder: '電話番号を入力',
 		passwordPlaceholder: 'パスワードを入力'
 	},
@@ -57,7 +58,10 @@ export default {
 		confirmPasswordPlaceholder: '新しいパスワードを確認',
 		redirecting: 'ログインページにリダイレクトしています...',
 		backToSignIn: '戻る',
-		linkExpiresIn: 'リンクの有効期限'
+		linkExpiresIn: 'リンクの有効期限',
+		invalidTokenTitle: 'リンクが期限切れまたは無効です',
+		invalidTokenMessage: 'このパスワードリセットリンクは期限切れまたは無効です。セキュリティ上の理由から、リンクは限られた時間のみ有効です。',
+		invalidTokenButton: '新しいリセットリンクをリクエスト'
 	},
 	error: {
 		title: 'アクセスが許可されていません',
@@ -71,8 +75,28 @@ export default {
 		usernameAlreadyTaken: 'このユーザー名は既に使用されています',
 		registrationFailed: '登録に失敗しました。もう一度お試しください',
 		emailNotFound: 'メールアドレスが見つかりません',
+		emailNotRegistered: 'メールアドレスが登録されていません。続行するにはサインアップしてください。',
 		forgotPasswordFailed: 'リセット手順の送信に失敗しました。もう一度お試しください',
 		tokenExpired: 'リセットリンクが無効または期限切れです',
 		passwordResetFailed: 'パスワードのリセットに失敗しました。もう一度お試しください'
+	},
+	validation: {
+		phoneRequired: '電話番号は必須です',
+		phoneInvalid: '電話番号は数字のみである必要があります',
+		phoneMinLength: '電話番号は8桁以上である必要があります',
+		phoneMaxLength: '電話番号は15桁以下である必要があります',
+		passwordRequired: 'パスワードは必須です',
+		passwordMinLength: 'パスワードは6文字以上である必要があります',
+		nameRequired: '氏名は必須です',
+		nameMinLength: '氏名は2文字以上である必要があります',
+		usernameRequired: 'ユーザー名は必須です',
+		usernameMinLength: 'ユーザー名は3文字以上である必要があります',
+		usernameInvalid: 'ユーザー名は英数字のみである必要があります',
+		emailRequired: 'メールアドレスは必須です',
+		emailInvalid: '有効なメールアドレスを入力してください',
+		passwordMinLengthSignUp: 'パスワードは8文字以上である必要があります',
+		passwordMinLengthReset: 'パスワードは8文字以上である必要があります',
+		confirmPasswordRequired: 'パスワードを確認してください',
+		passwordMismatch: 'パスワードが一致しません'
 	}
 };

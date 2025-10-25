@@ -2,6 +2,7 @@ import { fail, error } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { isValidOrigin } from '$lib/config/origins';
 import { PUBLIC_API_URL } from '$env/static/public';
+import { forgotPasswordSchema } from '$lib/schemas/auth';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const origin = url.searchParams.get('origin');
@@ -18,23 +19,34 @@ export const load: PageServerLoad = async ({ url }) => {
 export const actions = {
 	default: async ({ request, url }) => {
 		const data = await request.formData();
-		const email = data.get('email')?.toString();
+		const email = data.get('email')?.toString() || '';
 		const origin = url.searchParams.get('origin');
 
 		// Validate origin
 		if (!isValidOrigin(origin)) {
-			return fail(400, { error: 'Invalid origin', email });
+			return fail(400, {
+				fieldErrors: { email: ['Invalid origin'] },
+				email: data.get('email')?.toString() || ''
+			});
 		}
 
-		// Validate input
-		if (!email) {
-			return fail(400, { error: 'Email is required', email });
-		}
+		// Validate input with Zod
+		const validation = forgotPasswordSchema.safeParse({ email });
 
-		// Basic email validation
-		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-		if (!emailRegex.test(email)) {
-			return fail(400, { error: 'Please enter a valid email address', email });
+		if (!validation.success) {
+			const fieldErrors: Record<string, string[]> = {};
+			validation.error.issues.forEach((err) => {
+				const field = err.path[0] as string;
+				if (!fieldErrors[field]) {
+					fieldErrors[field] = [];
+				}
+				fieldErrors[field].push(err.message);
+			});
+
+			return fail(400, {
+				fieldErrors,
+				email: data.get('email')?.toString() || ''
+			});
 		}
 
 		try {

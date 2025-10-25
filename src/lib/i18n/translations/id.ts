@@ -19,6 +19,7 @@ export default {
 		button: 'Masuk',
 		noAccount: 'Belum punya akun?',
 		signUpLink: 'Daftar',
+		createNewAccount: 'Buat Akun Baru',
 		phoneNumberPlaceholder: 'Masukkan nomor telepon Anda',
 		passwordPlaceholder: 'Masukkan kata sandi Anda'
 	},
@@ -56,8 +57,11 @@ export default {
 		passwordPlaceholder: 'Masukkan kata sandi baru',
 		confirmPasswordPlaceholder: 'Konfirmasi kata sandi baru',
 		redirecting: 'Mengarahkan ke halaman masuk...',
-		backToSignIn: 'Kembali ke',
-		linkExpiresIn: 'Tautan kedaluwarsa dalam'
+		backToSignIn: 'Kembali ke Sign In',
+		linkExpiresIn: 'Tautan kedaluwarsa dalam',
+		invalidTokenTitle: 'Tautan Kedaluwarsa atau Tidak Valid',
+		invalidTokenMessage: 'Tautan reset kata sandi ini telah kedaluwarsa atau tidak lagi valid. Tautan hanya berlaku untuk waktu terbatas demi alasan keamanan.',
+		invalidTokenButton: 'Minta Tautan Reset Baru'
 	},
 	error: {
 		title: 'Anda Tidak Diizinkan',
@@ -71,8 +75,28 @@ export default {
 		usernameAlreadyTaken: 'Nama pengguna ini sudah digunakan',
 		registrationFailed: 'Pendaftaran gagal. Silakan coba lagi',
 		emailNotFound: 'Alamat email tidak ditemukan',
+		emailNotRegistered: 'Alamat email tidak terdaftar, silakan mendaftar untuk melanjutkan',
 		forgotPasswordFailed: 'Gagal mengirim instruksi reset. Silakan coba lagi',
 		tokenExpired: 'Tautan reset tidak valid atau kedaluwarsa',
 		passwordResetFailed: 'Gagal mengatur ulang kata sandi. Silakan coba lagi'
+	},
+	validation: {
+		phoneRequired: 'Nomor telepon wajib diisi',
+		phoneInvalid: 'Nomor telepon hanya boleh berisi angka',
+		phoneMinLength: 'Nomor telepon harus minimal 8 digit',
+		phoneMaxLength: 'Nomor telepon maksimal 15 digit',
+		passwordRequired: 'Kata sandi wajib diisi',
+		passwordMinLength: 'Kata sandi harus minimal 6 karakter',
+		nameRequired: 'Nama lengkap wajib diisi',
+		nameMinLength: 'Nama harus minimal 2 karakter',
+		usernameRequired: 'Nama pengguna wajib diisi',
+		usernameMinLength: 'Nama pengguna harus minimal 3 karakter',
+		usernameInvalid: 'Nama pengguna hanya boleh berisi huruf dan angka',
+		emailRequired: 'Email wajib diisi',
+		emailInvalid: 'Silakan masukkan alamat email yang valid',
+		passwordMinLengthSignUp: 'Kata sandi harus minimal 8 karakter',
+		passwordMinLengthReset: 'Kata sandi harus minimal 8 karakter',
+		confirmPasswordRequired: 'Silakan konfirmasi kata sandi Anda',
+		passwordMismatch: 'Kata sandi tidak cocok'
 	}
 };

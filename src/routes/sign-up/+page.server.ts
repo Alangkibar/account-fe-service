@@ -2,6 +2,7 @@ import { fail, redirect, error } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getOriginBaseURL, isValidOrigin } from '$lib/config/origins';
 import { PUBLIC_API_URL } from '$env/static/public';
+import { signUpSchema } from '$lib/schemas/auth';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const origin = url.searchParams.get('origin');
@@ -18,36 +19,56 @@ export const load: PageServerLoad = async ({ url }) => {
 export const actions = {
 	default: async ({ request, cookies, url }) => {
 		const data = await request.formData();
-		let phone_number = data.get('phone_number')?.toString();
-		const password = data.get('password')?.toString();
-		const name = data.get('name')?.toString();
-		// Optional fields for registration
-		const username = data.get('username')?.toString();
-		const email = data.get('email')?.toString();
+		let phone_number = data.get('phone_number')?.toString() || '';
+		const password = data.get('password')?.toString() || '';
+		const name = data.get('name')?.toString() || '';
+		const username = data.get('username')?.toString() || '';
+		const email = data.get('email')?.toString() || '';
 		const referral_code = data.get('referral_code')?.toString();
 		const origin = url.searchParams.get('origin');
+
+		// Validate origin
+		if (!isValidOrigin(origin)) {
+			return fail(400, {
+				fieldErrors: { name: ['Invalid origin'] },
+				phone_number: data.get('phone_number')?.toString() || '',
+				name: data.get('name')?.toString() || '',
+				username: data.get('username')?.toString() || '',
+				email: data.get('email')?.toString() || ''
+			});
+		}
 
 		// Format phone number: remove +62 prefix and leading 0
 		if (phone_number) {
 			phone_number = phone_number.replace(/^\+62/, '').replace(/^0/, '');
 		}
 
-		// Validate origin
-		if (!isValidOrigin(origin)) {
-			return fail(400, { error: 'Invalid origin', phone_number, name, username, email });
-		}
+		// Validate input with Zod
+		const validation = signUpSchema.safeParse({
+			name,
+			username,
+			email,
+			phone_number,
+			password
+		});
 
-		// Validate input
-		if (!name || name.trim().length < 2) {
-			return fail(400, { error: 'Name must be at least 2 characters', phone_number, name, username, email });
-		}
+		if (!validation.success) {
+			const fieldErrors: Record<string, string[]> = {};
+			validation.error.issues.forEach((err) => {
+				const field = err.path[0] as string;
+				if (!fieldErrors[field]) {
+					fieldErrors[field] = [];
+				}
+				fieldErrors[field].push(err.message);
+			});
 
-		if (!phone_number) {
-			return fail(400, { error: 'Phone number is required', phone_number, name, username, email });
-		}
-
-		if (!password || password.length < 8) {
-			return fail(400, { error: 'Password must be at least 8 characters', phone_number, name, username, email });
+			return fail(400, {
+				fieldErrors,
+				phone_number: data.get('phone_number')?.toString() || '',
+				name: data.get('name')?.toString() || '',
+				username: data.get('username')?.toString() || '',
+				email: data.get('email')?.toString() || ''
+			});
 		}
 
 		const API_URL = PUBLIC_API_URL || 'http://localhost:3000';
