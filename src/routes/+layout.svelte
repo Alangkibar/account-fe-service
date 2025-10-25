@@ -1,6 +1,6 @@
 <script lang="ts">
   import "../app.css";
-  import favicon from "$lib/assets/favicon.svg";
+  import favicon from "$lib/assets/favicon.ico";
   import { theme } from "$lib/stores/theme";
   import { page } from "$app/state";
   import logo from "$lib/assets/logo.png";
