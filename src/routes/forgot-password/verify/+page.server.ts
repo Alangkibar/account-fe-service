@@ -13,15 +13,11 @@ export const load: PageServerLoad = async ({ url }) => {
 	try {
 		const API_URL = PUBLIC_API_URL || 'http://localhost:3000';
 
-		console.log('Verifying token:', token);
-
 		// Verify token with API
 		const response = await fetch(`${API_URL}/auth/forgot-password/verify/${token}`, {
 			method: 'GET',
 			headers: { 'Content-Type': 'application/json' }
 		});
-
-		console.log('Token verification status:', response.status);
 
 		let result;
 		try {
@@ -54,6 +50,24 @@ export const load: PageServerLoad = async ({ url }) => {
 			// Fallback to single error object
 			else if (result.error?.code) {
 				errorCodes.push(result.error.code);
+			}
+
+			// Check if token is invalid or expired
+			const isInvalidToken =
+				errorCodes.includes('INVALID_FORGOT_PASSWORD_TOKEN') ||
+				errorCodes.includes('TOKEN_EXPIRED') ||
+				errorCodes.includes('INVALID_TOKEN');
+
+			// Return invalid token state instead of throwing error
+			if (isInvalidToken) {
+				return {
+					token,
+					verified: false,
+					invalidToken: true,
+					errorCodes,
+					errorMessage: result.message || 'Invalid or expired token',
+					origin: origin || 'localplace'
+				};
 			}
 
 			throw error(response.status, {

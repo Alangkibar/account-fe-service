@@ -19,6 +19,7 @@ export default {
 		button: 'تسجيل الدخول',
 		noAccount: 'ليس لديك حساب؟',
 		signUpLink: 'إنشاء حساب',
+		createNewAccount: 'إنشاء حساب جديد',
 		phoneNumberPlaceholder: 'أدخل رقم هاتفك',
 		passwordPlaceholder: 'أدخل كلمة المرور'
 	},
@@ -57,7 +58,10 @@ export default {
 		confirmPasswordPlaceholder: 'تأكيد كلمة المرور الجديدة',
 		redirecting: 'إعادة التوجيه إلى تسجيل الدخول...',
 		backToSignIn: 'العودة إلى',
-		linkExpiresIn: 'ينتهي الرابط في'
+		linkExpiresIn: 'ينتهي الرابط في',
+		invalidTokenTitle: 'انتهت صلاحية الرابط أو غير صالح',
+		invalidTokenMessage: 'انتهت صلاحية رابط إعادة تعيين كلمة المرور هذا أو لم يعد صالحًا. الروابط صالحة لفترة محدودة لأسباب أمنية.',
+		invalidTokenButton: 'طلب رابط إعادة تعيين جديد'
 	},
 	error: {
 		title: 'غير مسموح لك',
@@ -71,8 +75,28 @@ export default {
 		usernameAlreadyTaken: 'اسم المستخدم هذا مستخدم بالفعل',
 		registrationFailed: 'فشل التسجيل. يرجى المحاولة مرة أخرى',
 		emailNotFound: 'عنوان البريد الإلكتروني غير موجود',
+		emailNotRegistered: 'عنوان البريد الإلكتروني غير مسجل، يرجى التسجيل للمتابعة',
 		forgotPasswordFailed: 'فشل إرسال تعليمات إعادة التعيين. يرجى المحاولة مرة أخرى',
 		tokenExpired: 'رابط إعادة التعيين غير صالح أو منتهي الصلاحية',
 		passwordResetFailed: 'فشل إعادة تعيين كلمة المرور. يرجى المحاولة مرة أخرى'
+	},
+	validation: {
+		phoneRequired: 'رقم الهاتف مطلوب',
+		phoneInvalid: 'يجب أن يحتوي رقم الهاتف على أرقام فقط',
+		phoneMinLength: 'يجب أن يتكون رقم الهاتف من 8 أرقام على الأقل',
+		phoneMaxLength: 'يجب ألا يتجاوز رقم الهاتف 15 رقمًا',
+		passwordRequired: 'كلمة المرور مطلوبة',
+		passwordMinLength: 'يجب أن تتكون كلمة المرور من 6 أحرف على الأقل',
+		nameRequired: 'الاسم الكامل مطلوب',
+		nameMinLength: 'يجب أن يتكون الاسم من حرفين على الأقل',
+		usernameRequired: 'اسم المستخدم مطلوب',
+		usernameMinLength: 'يجب أن يتكون اسم المستخدم من 3 أحرف على الأقل',
+		usernameInvalid: 'يجب أن يحتوي اسم المستخدم على حروف وأرقام فقط',
+		emailRequired: 'البريد الإلكتروني مطلوب',
+		emailInvalid: 'الرجاء إدخال عنوان بريد إلكتروني صالح',
+		passwordMinLengthSignUp: 'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل',
+		passwordMinLengthReset: 'يجب أن تتكون كلمة المرور من 8 أحرف على الأقل',
+		confirmPasswordRequired: 'الرجاء تأكيد كلمة المرور',
+		passwordMismatch: 'كلمات المرور غير متطابقة'
 	}
 };

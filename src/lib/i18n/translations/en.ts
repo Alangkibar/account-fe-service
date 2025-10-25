@@ -19,6 +19,7 @@ export default {
 		button: 'Sign in',
 		noAccount: "Don't have an account?",
 		signUpLink: 'Sign up',
+		createNewAccount: 'Create New Account',
 		phoneNumberPlaceholder: 'Enter your phone number',
 		passwordPlaceholder: 'Enter your password'
 	},
@@ -56,8 +57,11 @@ export default {
 		passwordPlaceholder: 'Enter new password',
 		confirmPasswordPlaceholder: 'Confirm new password',
 		redirecting: 'Redirecting to sign in...',
-		backToSignIn: 'Back to',
-		linkExpiresIn: 'Link expires in'
+		backToSignIn: 'Back to Sign In',
+		linkExpiresIn: 'Link expires in',
+		invalidTokenTitle: 'Link Expired or Invalid',
+		invalidTokenMessage: 'This password reset link has expired or is no longer valid. Links are only valid for a limited time for security reasons.',
+		invalidTokenButton: 'Request New Reset Link'
 	},
 	error: {
 		title: "You're Not Allowed",
@@ -71,8 +75,28 @@ export default {
 		usernameAlreadyTaken: 'This username is already taken',
 		registrationFailed: 'Registration failed. Please try again',
 		emailNotFound: 'Email address not found',
+		emailNotRegistered: 'Email address not registered, please sign up to continue',
 		forgotPasswordFailed: 'Failed to send reset instructions. Please try again',
 		tokenExpired: 'Reset link is invalid or expired',
 		passwordResetFailed: 'Failed to reset password. Please try again'
+	},
+	validation: {
+		phoneRequired: 'Phone number is required',
+		phoneInvalid: 'Phone number must contain only numbers',
+		phoneMinLength: 'Phone number must be at least 8 digits',
+		phoneMaxLength: 'Phone number must be at most 15 digits',
+		passwordRequired: 'Password is required',
+		passwordMinLength: 'Password must be at least 6 characters',
+		nameRequired: 'Full name is required',
+		nameMinLength: 'Name must be at least 2 characters',
+		usernameRequired: 'Username is required',
+		usernameMinLength: 'Username must be at least 3 characters',
+		usernameInvalid: 'Username must contain only letters and numbers',
+		emailRequired: 'Email is required',
+		emailInvalid: 'Please enter a valid email address',
+		passwordMinLengthSignUp: 'Password must be at least 8 characters',
+		passwordMinLengthReset: 'Password must be at least 8 characters',
+		confirmPasswordRequired: 'Please confirm your password',
+		passwordMismatch: 'Passwords do not match'
 	}
 };

@@ -6,13 +6,22 @@
   import LanguageSelector from "$lib/components/LanguageSelector.svelte";
   import { enhance } from "$app/forms";
   import logo from "$lib/assets/logo.png";
+  import Icon from "@iconify/svelte";
   import { PUBLIC_API_URL } from "$env/static/public";
+  import { createAuthSchemas } from "$lib/schemas/auth";
+  import { getErrorMessages } from "$lib/utils/errorTranslation";
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
 
   const config = getOriginConfig(data.origin);
   let t = $derived(getTranslations($language));
   let isSubmitting = $state(false);
+
+  // Client-side validation errors
+  let fieldErrors = $state<Record<string, string[]>>({});
+
+  // Create reactive schemas based on current language
+  let schemas = $derived(createAuthSchemas(t));
 
   // Username checker states
   let username = $state(form?.username ?? "");
@@ -69,6 +78,11 @@
     // Update input value to reflect the filtered value
     input.value = alphanumericValue;
 
+    // Clear error when user types
+    if (fieldErrors.username) {
+      fieldErrors = { ...fieldErrors, username: [] };
+    }
+
     clearTimeout(usernameCheckTimeout);
 
     if (alphanumericValue.length === 0) {
@@ -88,43 +102,39 @@
     }, 500);
   }
 
-  // Translate error codes from server
-  function translateErrorCode(errorCode: string): string {
-    switch (errorCode) {
-      case 'PHONE_NUMBER_ALREADY_EXISTS':
-        return t.error.phoneAlreadyRegistered;
-      case 'EMAIL_ALREADY_EXISTS':
-        return t.error.emailAlreadyRegistered;
-      case 'USERNAME_ALREADY_EXISTS':
-        return t.error.usernameAlreadyTaken;
-      case 'REGISTRATION_FAILED':
-        return t.error.registrationFailed;
-      default:
-        return errorCode;
-    }
-  }
-
-  // Get all error messages (can be multiple)
-  function getErrorMessages(): string {
-    if (!form?.errors) {
-      return form?.errorMessage || t.error.registrationFailed;
-    }
-
-    // If there are error codes, translate them
-    if (Array.isArray(form.errors) && form.errors.length > 0) {
-      const translatedErrors = form.errors.map(code => translateErrorCode(code));
-      return translatedErrors.join(', ');
-    }
-
-    // Fallback to server message or generic error
-    return form?.errorMessage || t.error.registrationFailed;
-  }
-
   function handlePhoneInput(e: Event) {
     const value = (e.target as HTMLInputElement).value;
     // Only allow numbers
     phoneNumber = value.replace(/\D/g, "");
+    // Clear error when user types
+    if (fieldErrors.phone_number) {
+      fieldErrors = { ...fieldErrors, phone_number: [] };
+    }
   }
+
+  // Clear error handlers for other fields
+  function clearFieldError(field: string) {
+    if (fieldErrors[field]) {
+      fieldErrors = { ...fieldErrors, [field]: [] };
+    }
+  }
+
+  // Scroll to first error field
+  function scrollToError() {
+    const errorField = document.querySelector('[data-error="true"]');
+    if (errorField) {
+      errorField.scrollIntoView({ behavior: "smooth", block: "center" });
+      (errorField as HTMLElement).focus();
+    }
+  }
+
+  // Watch for server-side errors
+  $effect(() => {
+    if (form?.fieldErrors) {
+      fieldErrors = form.fieldErrors;
+      setTimeout(scrollToError, 100);
+    }
+  });
 </script>
 
 <svelte:head>
@@ -132,50 +142,55 @@
 </svelte:head>
 
 <div
-  class="min-h-screen flex flex-col gap-6 items-center justify-center bg-white dark:bg-[#00262a] py-8 px-4 sm:py-12 sm:px-6 lg:px-8 transition-colors"
+  class="min-h-screen flex flex-col items-center bg-white dark:bg-[#00262a] py-8 pb-16 px-4 pb-safe transition-colors"
 >
   <!-- Language Selector and Theme Toggle -->
-  <div class="relative flex items-center justify-between gap-2 w-full">
-    <LanguageSelector />
-    <button
-      onclick={() => theme.toggle()}
-      class="p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-[#003a3f] hover:bg-gray-200 dark:hover:bg-[#004a50] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
-      style="focus:ring-color: {config.color}"
-      aria-label="Toggle dark mode"
-    >
-      {#if $theme === "dark"}
-        <svg
-          class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            fill-rule="evenodd"
-            d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
-            clip-rule="evenodd"
-          />
-        </svg>
-      {:else}
-        <svg
-          class="w-5 h-5 sm:w-6 sm:h-6 text-[#37cca8]"
-          fill="currentColor"
-          viewBox="0 0 20 20"
-        >
-          <path
-            d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
-          />
-        </svg>
-      {/if}
-    </button>
+  <div class="relative flex items-start justify-between gap-2 max-w-md w-full">
+    <div class="flex-1">
+      <LanguageSelector />
+    </div>
+
+    <div class="flex-1 text-right">
+      <button
+        onclick={() => theme.toggle()}
+        class="p-2 sm:p-3 rounded-full bg-gray-100 dark:bg-[#003a3f] hover:bg-gray-200 dark:hover:bg-[#004a50] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
+        style="focus:ring-color: {config.color}"
+        aria-label="Toggle dark mode"
+      >
+        {#if $theme === "dark"}
+          <svg
+            class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+        {:else}
+          <svg
+            class="w-5 h-5 sm:w-6 sm:h-6 text-[#37cca8]"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+          >
+            <path
+              d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"
+            />
+          </svg>
+        {/if}
+      </button>
+    </div>
   </div>
 
   <div class="max-w-md w-full">
     <!-- LocalPlace Logo and Branding -->
-    <div class="text-center mb-6 sm:mb-8">
+    <div class="text-center">
       <div
-        class="h-16 w-16 flex items-center justify-center mx-auto mb-4 bg-[#00262a] rounded-full overflow-hidden"
+        class="h-14 w-14 flex items-center justify-center mx-auto mb-4 bg-[#00262a] rounded-full overflow-hidden"
       >
-        <img src={logo} alt="LocalPlace" class="h-12 sm:h-16 mx-auto" />
+        <img src={logo} alt="LocalPlace" class="h-12 mx-auto" />
       </div>
       <div
         class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-[#003a3f] rounded-full text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-6"
@@ -197,12 +212,17 @@
     </div>
 
     <div class="text-center mb-8 sm:mb-10">
-      <h2
-        class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-2"
+      <a
+        href="/sign-in?origin={data.origin}"
+        class="inline-flex items-center gap-1 px-4 py-2 mb-6 rounded-full border border-gray-300 dark:border-[#005159] text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-[#003a3f] transition-colors"
       >
+        <Icon icon="solar:alt-arrow-left-linear" font-size="18px" />
+        {t.signUp.hasAccount}
+      </a>
+
+      <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
         {t.signUp.title}
         <span style="color: {config.color}">{config.name}</span>
-        {t.signUp.titleSuffix}
       </h2>
       <p class="text-gray-500 dark:text-gray-400 text-sm">
         {t.signUp.subtitle}
@@ -212,6 +232,45 @@
     <form
       method="POST"
       use:enhance={() => {
+        // Clear previous errors
+        fieldErrors = {};
+
+        // Client-side validation
+        const formData = new FormData(document.querySelector("form")!);
+        const name = formData.get("name")?.toString() || "";
+        const usernameValue = formData.get("username")?.toString() || "";
+        const email = formData.get("email")?.toString() || "";
+        let phone = formData.get("phone_number")?.toString() || "";
+        const password = formData.get("password")?.toString() || "";
+
+        // Format phone number for validation
+        phone = phone.replace(/\D/g, "");
+
+        const validation = schemas.signUpSchema.safeParse({
+          name,
+          username: usernameValue,
+          email,
+          phone_number: phone,
+          password,
+        });
+
+        if (!validation.success) {
+          const errors: Record<string, string[]> = {};
+          validation.error.issues.forEach((err) => {
+            const field = err.path[0] as string;
+            if (!errors[field]) {
+              errors[field] = [];
+            }
+            errors[field].push(err.message);
+          });
+
+          fieldErrors = errors;
+          setTimeout(scrollToError, 100);
+
+          // Prevent form submission by returning early
+          return () => {};
+        }
+
         isSubmitting = true;
         return async ({ update }) => {
           await update();
@@ -239,7 +298,9 @@
               </svg>
             </div>
             <div class="ml-3">
-              <p class="text-sm text-red-800 dark:text-red-200">{getErrorMessages()}</p>
+              <p class="text-sm text-red-800 dark:text-red-200">
+                {getErrorMessages(form, t, t.error.registrationFailed)}
+              </p>
             </div>
           </div>
         </div>
@@ -257,12 +318,21 @@
           name="name"
           type="text"
           autocomplete="name"
-          required
-          class="block w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 dark:border-[#005159] rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base"
+          data-error={fieldErrors.name?.length ? "true" : "false"}
+          class="block w-full px-3 py-2.5 sm:px-4 sm:py-3 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base {fieldErrors
+            .name?.length
+            ? 'border-red-500 dark:border-red-500'
+            : 'border-gray-300 dark:border-[#005159]'}"
           style="--focus-color: {config.color}"
           placeholder={t.signUp.fullNamePlaceholder}
           value={form?.name ?? ""}
+          oninput={() => clearFieldError("name")}
         />
+        {#if fieldErrors.name?.length}
+          <p class="mt-1.5 text-xs sm:text-sm text-red-600 dark:text-red-400">
+            {fieldErrors.name[0]}
+          </p>
+        {/if}
       </div>
 
       <div>
@@ -278,8 +348,11 @@
             name="username"
             type="text"
             autocomplete="username"
-            required
-            class="block w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 dark:border-[#005159] rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base pr-10"
+            data-error={fieldErrors.username?.length ? "true" : "false"}
+            class="block w-full px-3 py-2.5 sm:px-4 sm:py-3 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base pr-10 {fieldErrors
+              .username?.length
+              ? 'border-red-500 dark:border-red-500'
+              : 'border-gray-300 dark:border-[#005159]'}"
             style="--focus-color: {config.color}"
             placeholder={t.signUp.usernamePlaceholder}
             value={username}
@@ -338,7 +411,11 @@
             </div>
           {/if}
         </div>
-        {#if usernameMessage}
+        {#if fieldErrors.username?.length}
+          <p class="mt-1.5 text-xs sm:text-sm text-red-600 dark:text-red-400">
+            {fieldErrors.username[0]}
+          </p>
+        {:else if usernameMessage}
           <p
             class="mt-1.5 text-xs sm:text-sm {usernameStatus === 'available'
               ? 'text-green-600 dark:text-green-400'
@@ -364,11 +441,21 @@
           name="email"
           type="email"
           autocomplete="email"
-          class="block w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 dark:border-[#005159] rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base"
+          data-error={fieldErrors.email?.length ? "true" : "false"}
+          class="block w-full px-3 py-2.5 sm:px-4 sm:py-3 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base {fieldErrors
+            .email?.length
+            ? 'border-red-500 dark:border-red-500'
+            : 'border-gray-300 dark:border-[#005159]'}"
           style="--focus-color: {config.color}"
           placeholder={t.signUp.emailPlaceholder}
           value={form?.email ?? ""}
+          oninput={() => clearFieldError("email")}
         />
+        {#if fieldErrors.email?.length}
+          <p class="mt-1.5 text-xs sm:text-sm text-red-600 dark:text-red-400">
+            {fieldErrors.email[0]}
+          </p>
+        {/if}
       </div>
 
       <div>
@@ -389,17 +476,26 @@
             name="phone_number"
             type="tel"
             autocomplete="tel"
-            required
-            class="block w-full pl-14 sm:pl-16 pr-3 py-2.5 sm:pr-4 sm:py-3 border border-gray-300 dark:border-[#005159] rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base"
+            data-error={fieldErrors.phone_number?.length ? "true" : "false"}
+            class="block w-full pl-14 sm:pl-16 pr-3 py-2.5 sm:pr-4 sm:py-3 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base {fieldErrors
+              .phone_number?.length
+              ? 'border-red-500 dark:border-red-500'
+              : 'border-gray-300 dark:border-[#005159]'}"
             style="--focus-color: {config.color}"
             placeholder="812345678"
             value={phoneNumber}
             oninput={handlePhoneInput}
           />
         </div>
-        <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-          (e.g., 812345678)
-        </p>
+        {#if fieldErrors.phone_number?.length}
+          <p class="mt-1.5 text-xs sm:text-sm text-red-600 dark:text-red-400">
+            {fieldErrors.phone_number[0]}
+          </p>
+        {:else}
+          <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+            (e.g., 812345678)
+          </p>
+        {/if}
       </div>
 
       <div>
@@ -414,11 +510,20 @@
           name="password"
           type="password"
           autocomplete="new-password"
-          required
-          class="block w-full px-3 py-2.5 sm:px-4 sm:py-3 border border-gray-300 dark:border-[#005159] rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base"
+          data-error={fieldErrors.password?.length ? "true" : "false"}
+          class="block w-full px-3 py-2.5 sm:px-4 sm:py-3 border rounded-lg text-gray-900 dark:text-white bg-white dark:bg-[#003a3f] placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-0 dark:focus:ring-offset-gray-950 transition-all text-sm sm:text-base {fieldErrors
+            .password?.length
+            ? 'border-red-500 dark:border-red-500'
+            : 'border-gray-300 dark:border-[#005159]'}"
           style="--focus-color: {config.color}"
           placeholder={t.signUp.passwordPlaceholder}
+          oninput={() => clearFieldError("password")}
         />
+        {#if fieldErrors.password?.length}
+          <p class="mt-1.5 text-xs sm:text-sm text-red-600 dark:text-red-400">
+            {fieldErrors.password[0]}
+          </p>
+        {/if}
       </div>
 
       <button
@@ -452,19 +557,6 @@
         {t.signUp.button}
       </button>
     </form>
-
-    <div
-      class="mt-5 sm:mt-6 text-center text-sm text-gray-600 dark:text-gray-400"
-    >
-      {t.signUp.hasAccount}
-      <a
-        href="/sign-in?origin={data.origin}"
-        class="font-medium hover:underline ml-1 transition-colors"
-        style="color: {config.color}"
-      >
-        {t.signUp.signInLink}
-      </a>
-    </div>
   </div>
 </div>
 
@@ -485,5 +577,10 @@
   button[type="submit"]:focus {
     box-shadow: 0 0 0 3px
       color-mix(in srgb, var(--focus-color) 20%, transparent);
+  }
+
+  /* Ensure dark mode class is applied */
+  :global(html.dark) {
+    color-scheme: dark;
   }
 </style>

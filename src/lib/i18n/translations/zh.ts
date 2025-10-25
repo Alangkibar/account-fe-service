@@ -19,6 +19,7 @@ export default {
 		button: '登录',
 		noAccount: '还没有账户？',
 		signUpLink: '注册',
+		createNewAccount: '创建新账户',
 		phoneNumberPlaceholder: '输入您的电话号码',
 		passwordPlaceholder: '输入您的密码'
 	},
@@ -57,7 +58,10 @@ export default {
 		confirmPasswordPlaceholder: '确认新密码',
 		redirecting: '正在跳转到登录页面...',
 		backToSignIn: '返回',
-		linkExpiresIn: '链接将在以下时间后过期'
+		linkExpiresIn: '链接将在以下时间后过期',
+		invalidTokenTitle: '链接已过期或无效',
+		invalidTokenMessage: '此密码重置链接已过期或不再有效。出于安全原因，链接仅在有限时间内有效。',
+		invalidTokenButton: '请求新的重置链接'
 	},
 	error: {
 		title: '您无权访问',
@@ -71,8 +75,28 @@ export default {
 		usernameAlreadyTaken: '此用户名已被使用',
 		registrationFailed: '注册失败。请重试',
 		emailNotFound: '未找到电子邮件地址',
+		emailNotRegistered: '电子邮件地址未注册，请注册后继续',
 		forgotPasswordFailed: '发送重置说明失败。请重试',
 		tokenExpired: '重置链接无效或已过期',
 		passwordResetFailed: '重置密码失败。请重试'
+	},
+	validation: {
+		phoneRequired: '电话号码为必填项',
+		phoneInvalid: '电话号码只能包含数字',
+		phoneMinLength: '电话号码必须至少8位',
+		phoneMaxLength: '电话号码最多15位',
+		passwordRequired: '密码为必填项',
+		passwordMinLength: '密码必须至少6个字符',
+		nameRequired: '全名为必填项',
+		nameMinLength: '姓名必须至少2个字符',
+		usernameRequired: '用户名为必填项',
+		usernameMinLength: '用户名必须至少3个字符',
+		usernameInvalid: '用户名只能包含字母和数字',
+		emailRequired: '电子邮件为必填项',
+		emailInvalid: '请输入有效的电子邮件地址',
+		passwordMinLengthSignUp: '密码必须至少8个字符',
+		passwordMinLengthReset: '密码必须至少8个字符',
+		confirmPasswordRequired: '请确认您的密码',
+		passwordMismatch: '密码不匹配'
 	}
 };

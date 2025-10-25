@@ -2,6 +2,7 @@ import { fail, redirect, error } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { getOriginBaseURL, isValidOrigin } from '$lib/config/origins';
 import { PUBLIC_API_URL } from '$env/static/public';
+import { signInSchema } from '$lib/schemas/auth';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const origin = url.searchParams.get('origin');
@@ -18,27 +19,40 @@ export const load: PageServerLoad = async ({ url }) => {
 export const actions = {
 	default: async ({ request, cookies, url }) => {
 		const data = await request.formData();
-		let phone_number = data.get('phone_number')?.toString();
-		const password = data.get('password')?.toString();
+		let phone_number = data.get('phone_number')?.toString() || '';
+		const password = data.get('password')?.toString() || '';
 		const origin = url.searchParams.get('origin');
+
+		// Validate origin
+		if (!isValidOrigin(origin)) {
+			return fail(400, {
+				fieldErrors: { phone_number: ['Invalid origin'] },
+				phone_number
+			});
+		}
 
 		// Format phone number: remove +62 prefix and leading 0
 		if (phone_number) {
 			phone_number = phone_number.replace(/^\+62/, '').replace(/^0/, '');
 		}
 
-		// Validate origin
-		if (!isValidOrigin(origin)) {
-			return fail(400, { error: 'Invalid origin', phone_number });
-		}
+		// Validate input with Zod
+		const validation = signInSchema.safeParse({ phone_number, password });
 
-		// Validate input
-		if (!phone_number) {
-			return fail(400, { error: 'Phone number is required', phone_number });
-		}
+		if (!validation.success) {
+			const fieldErrors: Record<string, string[]> = {};
+			validation.error.issues.forEach((err) => {
+				const field = err.path[0] as string;
+				if (!fieldErrors[field]) {
+					fieldErrors[field] = [];
+				}
+				fieldErrors[field].push(err.message);
+			});
 
-		if (!password || password.length < 6) {
-			return fail(400, { error: 'Password must be at least 6 characters', phone_number });
+			return fail(400, {
+				fieldErrors,
+				phone_number: data.get('phone_number')?.toString() || ''
+			});
 		}
 
 		let result;
@@ -68,7 +82,7 @@ export const actions = {
 				console.error('Response text:', text);
 				return fail(500, {
 					error: 'Invalid response from server',
-					phone_number
+					phone_number: data.get('phone_number')?.toString() || ''
 				});
 			}
 
@@ -98,7 +112,7 @@ export const actions = {
 				return fail(response.status, {
 					errors: errorCodes.length > 0 ? errorCodes : ['UNKNOWN_ERROR'],
 					errorMessage: result.message,
-					phone_number
+					phone_number: data.get('phone_number')?.toString() || ''
 				});
 			}
 		} catch (err) {
@@ -106,7 +120,7 @@ export const actions = {
 			const errorMessage = err instanceof Error ? err.message : 'Unknown error';
 			return fail(500, {
 				error: `An error occurred during sign in: ${errorMessage}`,
-				phone_number
+				phone_number: data.get('phone_number')?.toString() || ''
 			});
 		}
 
