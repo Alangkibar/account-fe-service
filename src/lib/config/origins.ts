@@ -16,12 +16,12 @@ export const originConfig: Record<ValidOrigin, OriginConfig> = {
 		accentColor: '#059669' // green-600
 	},
 	localplace: {
-		name: 'LocalPlace',
+		name: 'Local Place',
 		color: '#3b82f6', // blue-500
 		accentColor: '#2563eb' // blue-600
 	},
 	locallab: {
-		name: 'LocalLab',
+		name: 'Local Lab',
 		color: '#8b5cf6', // purple-500
 		accentColor: '#7c3aed' // purple-600
 	}
