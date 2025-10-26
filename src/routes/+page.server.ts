@@ -6,7 +6,7 @@ export const load: PageServerLoad = async ({ url }) => {
     const origin = url.searchParams.get('origin');
 
     if (!isValidOrigin(origin)) {
-        throw error(403, 'Access denied. Valid origin parameter is required.');
+        throw error(403, 'Access denied.');
     }
 
     return {
