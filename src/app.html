@@ -12,16 +12,24 @@
 		<link rel="manifest" href="/site.webmanifest" />
 
 		<!-- Meta Tags -->
-		<meta name="theme-color" content="#00262a" />
+		<meta name="theme-color" content="#ffffff" />
 		<meta name="description" content="Local Place Account Management" />
 
 		<script>
-			// Prevent flash of unstyled content (FOUC) for dark mode
+			// Prevent flash of unstyled content (FOUC) for dark mode and set theme color
 			try {
 				const theme = localStorage.getItem('theme');
 				const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-				if (theme === 'dark' || (!theme && prefersDark)) {
+				const isDark = theme === 'dark' || (!theme && prefersDark);
+
+				if (isDark) {
 					document.documentElement.classList.add('dark');
+				}
+
+				// Update theme-color meta tag
+				const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+				if (metaThemeColor) {
+					metaThemeColor.setAttribute('content', isDark ? '#00262a' : '#ffffff');
 				}
 			} catch (e) {}
 		</script>
