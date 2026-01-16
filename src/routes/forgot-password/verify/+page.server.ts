@@ -22,13 +22,10 @@ export const load: PageServerLoad = async ({ url }) => {
 		let result;
 		try {
 			result = await response.json();
-			console.log('Token verification result:', result);
 		} catch (parseError) {
 			console.error('Failed to parse JSON response:', parseError);
 			throw error(500, 'Invalid response from server');
 		}
-
-		console.log('Checking response.ok:', response.ok, 'result.success:', result.success);
 
 		if (!response.ok || !result.success) {
 			// Handle token verification errors
@@ -123,8 +120,6 @@ export const actions = {
 		try {
 			const API_URL = PUBLIC_API_URL || 'http://localhost:3000';
 
-			console.log('Resetting password with token:', token);
-
 			// Call password reset API
 			const response = await fetch(`${API_URL}/auth/forgot-password/verify/${token}`, {
 				method: 'POST',
@@ -135,20 +130,15 @@ export const actions = {
 				})
 			});
 
-			console.log('Password reset status:', response.status);
-
 			let result;
 			try {
 				result = await response.json();
-				console.log('Password reset result:', JSON.stringify(result, null, 2));
 			} catch (parseError) {
 				console.error('Failed to parse JSON response:', parseError);
 				return fail(500, {
 					error: 'Invalid response from server'
 				});
 			}
-
-			console.log('POST - Checking response.ok:', response.ok, 'result.success:', result.success);
 
 			if (!response.ok || !result.success) {
 				// Handle multiple errors from API
@@ -179,7 +169,6 @@ export const actions = {
 			}
 
 			// Success - redirect to sign in
-			console.log('SUCCESS - Returning success response');
 			return {
 				success: true,
 				message: result.message || 'Password has been reset successfully'

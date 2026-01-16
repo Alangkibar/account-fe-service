@@ -52,10 +52,6 @@ export const actions = {
 		try {
 			const API_URL = PUBLIC_API_URL || 'http://localhost:3000';
 
-			console.log('Attempting password reset to:', `${API_URL}/auth/forgot-password/user`);
-			console.log('Email:', email);
-			console.log('Origin:', origin);
-
 			// Call authentication API
 			const response = await fetch(`${API_URL}/auth/forgot-password/user`, {
 				method: 'POST',
@@ -65,12 +61,9 @@ export const actions = {
 				})
 			});
 
-			console.log('Response status:', response.status);
-
 			let result;
 			try {
 				result = await response.json();
-				console.log('Response data:', result);
 			} catch (parseError) {
 				console.error('Failed to parse JSON response:', parseError);
 				return fail(500, {
@@ -79,7 +72,6 @@ export const actions = {
 				});
 			}
 
-			console.log('Parsed result:', result);
 			if (!response.ok || !result.success) {
 				// Handle multiple errors from API
 				const errorCodes: string[] = [];

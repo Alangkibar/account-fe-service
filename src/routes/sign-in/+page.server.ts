@@ -70,12 +70,9 @@ export const actions = {
 				})
 			});
 
-			console.error("API_URL: ", API_URL);
-
 			// Parse JSON response regardless of status code
 			try {
 				result = await response.json();
-				console.log(result)
 			} catch (parseError) {
 				console.error('Failed to parse JSON response:', parseError);
 				const text = await response.text();
@@ -150,7 +147,6 @@ export const actions = {
 		const token = result.data?.access_token;
 		const redirectUrl = `${getOriginBaseURL(origin)}/authenticating?token=${encodeURIComponent(token)}`;
 
-		console.log('Login successful, redirecting to:', redirectUrl);
 		redirect(303, redirectUrl);
 	}
 } satisfies Actions;
