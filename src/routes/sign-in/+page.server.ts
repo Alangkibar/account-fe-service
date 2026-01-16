@@ -64,9 +64,8 @@ export const actions = {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
-					phone_number,
-					password,
-					fcm_id: ''
+					credentials: phone_number,
+					password
 				})
 			});
 
