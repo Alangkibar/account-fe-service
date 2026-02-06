@@ -6,13 +6,15 @@ import { signInSchema } from '$lib/schemas/auth';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const origin = url.searchParams.get('origin');
+	const trx_code = url.searchParams.get('trx_code');
 
 	if (!isValidOrigin(origin)) {
 		throw error(405, 'Access denied. Origin parameter is required.');
 	}
 
 	return {
-		origin
+		origin,
+		trx_code
 	};
 };
 
@@ -22,6 +24,7 @@ export const actions = {
 		let phone_number = data.get('phone_number')?.toString() || '';
 		const password = data.get('password')?.toString() || '';
 		const origin = url.searchParams.get('origin');
+		const trx_code = url.searchParams.get('trx_code');
 
 		// Validate origin
 		if (!isValidOrigin(origin)) {
@@ -65,7 +68,8 @@ export const actions = {
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					credentials: phone_number,
-					password
+					password,
+					trx_code: trx_code || undefined 
 				})
 			});
 
