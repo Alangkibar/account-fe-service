@@ -23,7 +23,7 @@ services:
     environment:
       PUBLIC_API_URL: "https://account.localplace.id/api/v1"
       PUBLIC_BASE_URL: "https://account.localplace.id"
-      PUBLIC_BASE_URL_LOCAL_HEALTH: "https://fitly.localplace.id"
+      PUBLIC_BASE_URL_LOCAL_HEALTH: "https://localhealth.id"
       PUBLIC_BASE_URL_LOCAL_PLACE: "https://localplace.id"
       PUBLIC_BASE_URL_LOCAL_LAB: "https://lab.localplace.id"
     networks:
