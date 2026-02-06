@@ -6,13 +6,15 @@ import { signUpSchema } from '$lib/schemas/auth';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const origin = url.searchParams.get('origin');
+	const trx_code = url.searchParams.get('trx_code');
 
 	if (!isValidOrigin(origin)) {
 		throw error(405, 'Access denied. Origin parameter is required.');
 	}
 
 	return {
-		origin
+		origin,
+		trx_code
 	};
 };
 
@@ -26,6 +28,7 @@ export const actions = {
 		const email = data.get('email')?.toString() || '';
 		const referral_code = data.get('referral_code')?.toString();
 		const origin = url.searchParams.get('origin');
+		const trx_code = url.searchParams.get('trx_code');
 
 		// Validate origin
 		if (!isValidOrigin(origin)) {
@@ -84,7 +87,8 @@ export const actions = {
 				phone_number,
 				password,
 				referral_code: referral_code || '',
-				fcm_id: ''
+				fcm_id: '',
+				trx_code: trx_code || undefined 
 			})
 		});
 
